@@ -7,7 +7,7 @@ export function ClassFeatureList() {
 
   return (
     <SectionCard title="Features & Traits">
-      <div className="space-y-2 max-h-[600px] overflow-y-auto scrollbar-thin pr-1">
+      <div className="space-y-2">
         {character.classFeatures.map((feature) => (
           <ClassFeatureItem key={feature.id} feature={feature} />
         ))}

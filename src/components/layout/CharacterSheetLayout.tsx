@@ -49,7 +49,13 @@ export function CharacterSheetLayout() {
           </SectionCard>
         </div>
 
-        {/* CENTER: Combat, HP, Ki, Attacks */}
+        {/* CENTER: Features, Inventory */}
+        <div className="space-y-3">
+          <ClassFeatureList />
+          <InventoryList />
+        </div>
+
+        {/* RIGHT: Combat, HP, Ki, Attacks */}
         <div className="space-y-3">
           <CombatStats />
           <HitPoints />
@@ -63,12 +69,6 @@ export function CharacterSheetLayout() {
           <KiTracker />
           <KiAbilityButtons />
           <AttackTable />
-        </div>
-
-        {/* RIGHT: Features, Inventory */}
-        <div className="space-y-3">
-          <ClassFeatureList />
-          <InventoryList />
         </div>
       </div>
     </div>

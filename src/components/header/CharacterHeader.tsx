@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import { useCharacter } from '../../context/CharacterContext'
+import { LevelUpModal } from '../modal/LevelUpModal'
 
 export function CharacterHeader() {
   const { character } = useCharacter()
+  const [isLevelUpOpen, setIsLevelUpOpen] = useState(false)
   const classStr = character.classes.map((c) => `${c.name} ${c.level}`).join(' / ')
 
   return (
@@ -21,6 +24,12 @@ export function CharacterHeader() {
         </div>
       </div>
       <div className="flex items-center gap-3 flex-wrap">
+        <button
+          onClick={() => setIsLevelUpOpen(true)}
+          className="px-3 py-1.5 rounded bg-dnd-gold/20 border border-dnd-gold/40 text-dnd-gold text-xs font-display tracking-wider hover:bg-dnd-gold/30 transition-colors"
+        >
+          Level Up
+        </button>
         <div className="flex items-center gap-1.5">
           {character.inspiration && (
             <span className="px-2 py-0.5 rounded-full bg-dnd-gold text-black text-xs font-bold font-display">
@@ -44,5 +53,6 @@ export function CharacterHeader() {
         </div>
       </div>
     </div>
+    <LevelUpModal isOpen={isLevelUpOpen} onClose={() => setIsLevelUpOpen(false)} />
   )
 }
