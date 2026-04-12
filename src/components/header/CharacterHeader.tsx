@@ -8,7 +8,8 @@ export function CharacterHeader() {
   const classStr = character.classes.map((c) => `${c.name} ${c.level}`).join(' / ')
 
   return (
-    <div className="bg-sheet-surface border border-sheet-border rounded-lg shadow-card px-4 py-3 flex flex-wrap items-center gap-4">
+    <>
+      <div className="bg-sheet-surface border border-sheet-border rounded-lg shadow-card px-4 py-3 flex flex-wrap items-center gap-4">
       <div className="flex-1 min-w-0">
         <h1 className="font-display text-2xl font-bold text-txt-primary tracking-wide truncate">
           {character.name}
@@ -52,7 +53,8 @@ export function CharacterHeader() {
           ))}
         </div>
       </div>
-    </div>
-    <LevelUpModal isOpen={isLevelUpOpen} onClose={() => setIsLevelUpOpen(false)} />
+      </div>
+      <LevelUpModal isOpen={isLevelUpOpen} onClose={() => setIsLevelUpOpen(false)} />
+    </>
   )
 }
