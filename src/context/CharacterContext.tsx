@@ -6,7 +6,8 @@ import React, {
   useRef,
   useCallback,
 } from 'react'
-import type { Character, DeathSaves, InventoryItem } from '../types/character'
+import type { Character, DeathSaves, InventoryItem, LevelUpPayload } from '../types/character'
+import { proficiencyBonus, totalLevel, monkLevel, kiMax } from '../lib/dnd5e'
 import { updateCharacterField, subscribeToCharacter, saveCharacter } from '../lib/firestore'
 import { CHARACTER_SEED } from '../constants/characterSeed'
 
@@ -25,6 +26,8 @@ type CharacterAction =
   | { type: 'SET_INSPIRATION'; payload: boolean }
   | { type: 'SHORT_REST'; payload: { hpRecovered: number } }
   | { type: 'LONG_REST' }
+  | { type: 'LEVEL_UP'; payload: LevelUpPayload }
+  | { type: 'UPDATE_CHARACTER'; payload: Partial<Character> }
 
 // ── Reducer ──────────────────────────────────────────────────────────────────
 
@@ -123,6 +126,33 @@ function reducer(state: Character, action: CharacterAction): Character {
       }
     }
 
+    case 'LEVEL_UP': {
+      const p = action.payload
+      const newProfBonus = proficiencyBonus(totalLevel(p.classes))
+      const newKiMax = kiMax(monkLevel(p.classes))
+      return {
+        ...state,
+        classes: p.classes,
+        abilityScores: p.abilityScores,
+        hitPoints: {
+          ...p.hitPoints,
+          current: Math.min(state.hitPoints.current, p.hitPoints.max),
+        },
+        proficiencyBonus: newProfBonus,
+        focusPoints: { current: state.focusPoints.current, max: newKiMax },
+        attacks: p.attacks,
+        classFeatures: p.classFeatures,
+        proficienciesWeapons: p.proficienciesWeapons,
+        proficienciesTools: p.proficienciesTools,
+        languages: p.languages,
+        armorClass: p.armorClass,
+        speed: p.speed,
+      }
+    }
+
+    case 'UPDATE_CHARACTER':
+      return { ...state, ...action.payload }
+
     default:
       return state
   }
@@ -176,6 +206,15 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
         inventory: state.inventory,
         gold: state.gold,
         inspiration: state.inspiration,
+        classes: state.classes,
+        abilityScores: state.abilityScores,
+        armorClass: state.armorClass,
+        speed: state.speed,
+        proficiencyBonus: state.proficiencyBonus,
+        attacks: state.attacks,
+        proficienciesWeapons: state.proficienciesWeapons,
+        proficienciesTools: state.proficienciesTools,
+        languages: state.languages,
       }).catch(console.error)
     }, 300)
   }, [])

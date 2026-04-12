@@ -101,6 +101,19 @@ export interface SpellEntry {
   notes: string
 }
 
+export interface LevelUpPayload {
+  classes: Array<{ name: string; level: number }>
+  abilityScores: AbilityScores
+  hitPoints: HitPoints
+  attacks: Attack[]
+  classFeatures: ClassFeature[]
+  proficienciesWeapons: string[]
+  proficienciesTools: string[]
+  languages: string[]
+  armorClass: number
+  speed: number
+}
+
 export interface Character {
   // Meta
   id: string
