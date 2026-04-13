@@ -21,6 +21,7 @@ type CharacterAction =
   | { type: 'SET_DEATH_SAVES'; payload: DeathSaves }
   | { type: 'SET_HIT_DICE'; payload: number }
   | { type: 'USE_FEATURE'; payload: { id: string } }
+  | { type: 'RESTORE_FEATURE'; payload: { id: string } }
   | { type: 'UPDATE_INVENTORY'; payload: Partial<InventoryItem> & { id: string } }
   | { type: 'ADD_INVENTORY_ITEM'; payload: InventoryItem }
   | { type: 'REMOVE_INVENTORY_ITEM'; payload: { id: string } }
@@ -89,6 +90,16 @@ function reducer(state: Character, action: CharacterAction): Character {
         ),
       }
     }
+
+    case 'RESTORE_FEATURE':
+      return {
+        ...state,
+        classFeatures: state.classFeatures.map((f) =>
+          f.id === action.payload.id && f.usesRemaining !== null && f.usesMax !== null
+            ? { ...f, usesRemaining: Math.min(f.usesMax, f.usesRemaining + 1) }
+            : f,
+        ),
+      }
 
     case 'UPDATE_INVENTORY':
       return {
