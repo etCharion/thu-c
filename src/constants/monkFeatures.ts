@@ -9,6 +9,8 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'none',
     usesMax: null,
     usesRemaining: null,
+    source: 'class',
+    resourceType: 'none',
   },
   {
     id: 'unarmored-defense',
@@ -17,6 +19,8 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'none',
     usesMax: null,
     usesRemaining: null,
+    source: 'class',
+    resourceType: 'none',
   },
   {
     id: 'monks-focus',
@@ -26,6 +30,8 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'short',
     usesMax: null,
     usesRemaining: null,
+    source: 'class',
+    resourceType: 'none',
   },
   {
     id: 'unarmored-movement',
@@ -34,6 +40,8 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'none',
     usesMax: null,
     usesRemaining: null,
+    source: 'class',
+    resourceType: 'none',
   },
   {
     id: 'uncanny-metabolism',
@@ -43,6 +51,8 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'long',
     usesMax: 1,
     usesRemaining: 1,
+    source: 'class',
+    resourceType: 'none',
   },
   {
     id: 'deflect-attacks',
@@ -52,6 +62,9 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'none',
     usesMax: null,
     usesRemaining: null,
+    source: 'class',
+    resourceType: 'ki',
+    resourceCost: 1,
   },
   {
     id: 'slow-fall',
@@ -60,6 +73,8 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'none',
     usesMax: null,
     usesRemaining: null,
+    source: 'class',
+    resourceType: 'none',
   },
   {
     id: 'extra-attack',
@@ -68,6 +83,8 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'none',
     usesMax: null,
     usesRemaining: null,
+    source: 'class',
+    resourceType: 'none',
   },
   {
     id: 'stunning-strike',
@@ -77,6 +94,9 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'none',
     usesMax: null,
     usesRemaining: null,
+    source: 'class',
+    resourceType: 'ki',
+    resourceCost: 1,
   },
   {
     id: 'empowered-strikes',
@@ -85,6 +105,8 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'none',
     usesMax: null,
     usesRemaining: null,
+    source: 'class',
+    resourceType: 'none',
   },
   {
     id: 'evasion',
@@ -94,6 +116,8 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'none',
     usesMax: null,
     usesRemaining: null,
+    source: 'class',
+    resourceType: 'none',
   },
   {
     id: 'wholeness-of-body',
@@ -102,6 +126,10 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'long',
     usesMax: 3,
     usesRemaining: 3,
+    source: 'class',
+    resourceType: 'ki',
+    resourceCost: 1,
+    sourceLabel: 'Open Hand',
   },
   // Subclass: Warrior of the Open Hand
   {
@@ -112,6 +140,9 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'none',
     usesMax: null,
     usesRemaining: null,
+    source: 'class',
+    resourceType: 'none',
+    sourceLabel: 'Open Hand',
   },
   // Dragonborn
   {
@@ -122,6 +153,8 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'long',
     usesMax: 3,
     usesRemaining: 3,
+    source: 'racial',
+    resourceType: 'none',
   },
   {
     id: 'draconic-flight',
@@ -131,6 +164,8 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'long',
     usesMax: 1,
     usesRemaining: 1,
+    source: 'racial',
+    resourceType: 'none',
   },
   {
     id: 'draconic-resistance',
@@ -139,6 +174,8 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'none',
     usesMax: null,
     usesRemaining: null,
+    source: 'racial',
+    resourceType: 'none',
   },
   // Feats
   {
@@ -149,6 +186,8 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'short',
     usesMax: 1,
     usesRemaining: 1,
+    source: 'feat',
+    resourceType: 'none',
   },
   {
     id: 'savage-attacker',
@@ -158,5 +197,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     resetsOn: 'none',
     usesMax: null,
     usesRemaining: null,
+    source: 'feat',
+    resourceType: 'none',
   },
 ]

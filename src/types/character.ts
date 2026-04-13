@@ -1,5 +1,7 @@
 export type AbilityName = 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'
 export type RestType = 'short' | 'long' | 'none'
+export type FeatureResourceType = 'ki' | 'spell-slot' | 'none' | 'custom'
+export type FeatureSource = 'class' | 'origin' | 'racial' | 'feat' | 'other'
 export type DamageType =
   | 'bludgeoning'
   | 'piercing'
@@ -74,6 +76,14 @@ export interface ClassFeature {
   resetsOn: RestType
   usesMax: number | null // null = passive / unlimited
   usesRemaining: number | null
+  /** Which resource pool is spent when using this feature */
+  resourceType?: FeatureResourceType
+  /** How many units of that resource are spent (default 1) */
+  resourceCost?: number
+  /** Where this feature comes from */
+  source?: FeatureSource
+  /** Optional finer label, e.g. "Open Hand", "Draconic Ancestor" */
+  sourceLabel?: string
 }
 
 export interface InventoryItem {
