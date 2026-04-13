@@ -4,10 +4,7 @@
 
 Repozitář: `etCharion/thu-c`
 
-Pro push na GitHub použij token přes HTTPS:
-```
-git push https://<GITHUB_TOKEN>@github.com/etCharion/thu-c.git <branch>
-```
-Token je uložen lokálně mimo repozitář (ptej se uživatele).
+Token je uložen v `.git/config` jako součást remote URL (lokálně, nikdy se nepushuje).
+`git push origin <branch>` funguje přímo bez dalšího nastavení.
 
 Development branch: `claude/review-dnd-character-bmHfc`
