@@ -2,6 +2,7 @@ export type AbilityName = 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'
 export type RestType = 'short' | 'long' | 'none'
 export type FeatureResourceType = 'ki' | 'spell-slot' | 'none' | 'custom'
 export type FeatureSource = 'class' | 'origin' | 'racial' | 'feat' | 'other'
+export type FeatureActionType = 'action' | 'bonus-action' | 'reaction' | 'passive' | 'special'
 export type DamageType =
   | 'bludgeoning'
   | 'piercing'
@@ -84,6 +85,8 @@ export interface ClassFeature {
   source?: FeatureSource
   /** Optional finer label, e.g. "Open Hand", "Draconic Ancestor" */
   sourceLabel?: string
+  /** How this feature is activated */
+  actionType?: FeatureActionType
 }
 
 export interface InventoryItem {

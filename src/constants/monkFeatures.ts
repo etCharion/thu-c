@@ -11,6 +11,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'passive',
   },
   {
     id: 'unarmored-defense',
@@ -21,6 +22,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'passive',
   },
   {
     id: 'monks-focus',
@@ -32,6 +34,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'special',
   },
   {
     id: 'unarmored-movement',
@@ -42,6 +45,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'passive',
   },
   {
     id: 'uncanny-metabolism',
@@ -53,6 +57,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: 1,
     source: 'class',
     resourceType: 'none',
+    actionType: 'special',
   },
   {
     id: 'deflect-attacks',
@@ -65,6 +70,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     source: 'class',
     resourceType: 'ki',
     resourceCost: 1,
+    actionType: 'reaction',
   },
   {
     id: 'slow-fall',
@@ -75,6 +81,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'reaction',
   },
   {
     id: 'extra-attack',
@@ -85,6 +92,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'passive',
   },
   {
     id: 'stunning-strike',
@@ -97,6 +105,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     source: 'class',
     resourceType: 'ki',
     resourceCost: 1,
+    actionType: 'action',
   },
   {
     id: 'empowered-strikes',
@@ -107,6 +116,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'passive',
   },
   {
     id: 'evasion',
@@ -118,6 +128,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'passive',
   },
   {
     id: 'wholeness-of-body',
@@ -129,6 +140,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     source: 'class',
     resourceType: 'none',
     sourceLabel: 'Open Hand',
+    actionType: 'bonus-action',
   },
   // Subclass: Warrior of the Open Hand
   {
@@ -142,6 +154,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     source: 'class',
     resourceType: 'none',
     sourceLabel: 'Open Hand',
+    actionType: 'bonus-action',
   },
   // Dragonborn
   {
@@ -154,6 +167,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: 3,
     source: 'racial',
     resourceType: 'none',
+    actionType: 'action',
   },
   {
     id: 'draconic-flight',
@@ -165,6 +179,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: 1,
     source: 'racial',
     resourceType: 'none',
+    actionType: 'bonus-action',
   },
   {
     id: 'draconic-resistance',
@@ -175,6 +190,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'racial',
     resourceType: 'none',
+    actionType: 'passive',
   },
   // Feats
   {
@@ -187,6 +203,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: 1,
     source: 'feat',
     resourceType: 'none',
+    actionType: 'special',
   },
   {
     id: 'savage-attacker',
@@ -198,6 +215,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'feat',
     resourceType: 'none',
+    actionType: 'passive',
   },
   // Monk's Focus sub-features
   {
@@ -211,6 +229,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     source: 'class',
     resourceType: 'ki',
     resourceCost: 1,
+    actionType: 'bonus-action',
   },
   {
     id: 'step-of-the-wind',
@@ -223,6 +242,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     source: 'class',
     resourceType: 'ki',
     resourceCost: 1,
+    actionType: 'bonus-action',
   },
   // Dragonborn racial
   {
@@ -234,6 +254,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'racial',
     resourceType: 'none',
+    actionType: 'passive',
   },
   {
     id: 'draconic-ancestry',
@@ -245,6 +266,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'racial',
     resourceType: 'none',
+    actionType: 'passive',
   },
   // Background feature
   {
@@ -257,5 +279,6 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'origin',
     resourceType: 'none',
+    actionType: 'passive',
   },
 ]
