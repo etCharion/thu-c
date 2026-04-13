@@ -5,6 +5,8 @@ export function RestButtons() {
   const { character, dispatch } = useCharacter()
   const [showHdPicker, setShowHdPicker] = useState(false)
   const [hdToSpend, setHdToSpend] = useState(1)
+  const [showShortRestConfirm, setShowShortRestConfirm] = useState(false)
+  const [showLongRestConfirm, setShowLongRestConfirm] = useState(false)
 
   function doShortRest() {
     const dieType = character.hitDiceType
@@ -19,10 +21,34 @@ export function RestButtons() {
 
   function doLongRest() {
     dispatch({ type: 'LONG_REST' })
+    setShowLongRestConfirm(false)
   }
 
   return (
     <div className="space-y-2">
+      {showShortRestConfirm && (
+        <div className="bg-sheet-elevated border border-blue-700 rounded p-3 space-y-2">
+          <div className="text-sm text-txt-primary font-semibold">Zahájit Short Rest?</div>
+          <div className="text-xs text-txt-muted">
+            Obnoví Focus Points a schopnosti s krátkým odpočinkem. Budete moci utratit Hit Dice.
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => { setShowHdPicker(true); setShowShortRestConfirm(false) }}
+              className="flex-1 py-1.5 rounded bg-blue-800 hover:bg-blue-700 text-white text-sm font-display tracking-wide"
+            >
+              Potvrdit
+            </button>
+            <button
+              onClick={() => setShowShortRestConfirm(false)}
+              className="px-3 py-1.5 rounded bg-sheet-border hover:bg-sheet-elevated text-txt-secondary text-sm"
+            >
+              Zrušit
+            </button>
+          </div>
+        </div>
+      )}
+
       {showHdPicker && (
         <div className="bg-sheet-elevated border border-sheet-border rounded p-3 space-y-2">
           <div className="text-sm text-txt-secondary">
@@ -62,15 +88,38 @@ export function RestButtons() {
         </div>
       )}
 
+      {showLongRestConfirm && (
+        <div className="bg-sheet-elevated border border-purple-700 rounded p-3 space-y-2">
+          <div className="text-sm text-txt-primary font-semibold">Zahájit Long Rest?</div>
+          <div className="text-xs text-txt-muted">
+            Obnoví HP na maximum, vyčistí temp HP, obnoví všechny schopnosti a část Hit Dice.
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={doLongRest}
+              className="flex-1 py-1.5 rounded bg-purple-800 hover:bg-purple-700 text-white text-sm font-display tracking-wide"
+            >
+              Potvrdit
+            </button>
+            <button
+              onClick={() => setShowLongRestConfirm(false)}
+              className="px-3 py-1.5 rounded bg-sheet-border hover:bg-sheet-elevated text-txt-secondary text-sm"
+            >
+              Zrušit
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-2">
         <button
-          onClick={() => setShowHdPicker(true)}
+          onClick={() => setShowShortRestConfirm(true)}
           className="py-2 px-3 rounded bg-blue-900 hover:bg-blue-800 border border-blue-700 text-white text-sm font-display tracking-wide transition-colors"
         >
           ☾ Short Rest
         </button>
         <button
-          onClick={doLongRest}
+          onClick={() => setShowLongRestConfirm(true)}
           className="py-2 px-3 rounded bg-purple-900 hover:bg-purple-800 border border-purple-700 text-white text-sm font-display tracking-wide transition-colors"
         >
           ★ Long Rest

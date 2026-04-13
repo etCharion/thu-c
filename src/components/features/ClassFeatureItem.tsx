@@ -110,12 +110,12 @@ export function ClassFeatureItem({ feature }: ClassFeatureItemProps) {
                   onClick={() =>
                     i < feature.usesRemaining!
                       ? dispatch({ type: 'USE_FEATURE', payload: { id: feature.id } })
-                      : null
+                      : dispatch({ type: 'RESTORE_FEATURE', payload: { id: feature.id } })
                   }
                   className={`w-4 h-4 rounded-full border-2 transition-colors ${
                     i < feature.usesRemaining!
-                      ? 'bg-dnd-gold border-dnd-gold'
-                      : 'bg-transparent border-txt-muted'
+                      ? 'bg-dnd-gold border-dnd-gold hover:bg-dnd-gold/70'
+                      : 'bg-transparent border-txt-muted hover:border-dnd-gold/50'
                   }`}
                 />
               ))}

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useCharacter } from '../../context/CharacterContext'
 import { SectionCard } from '../layout/SectionCard'
 import { Counter } from '../controls/Counter'
@@ -5,6 +6,8 @@ import { Counter } from '../controls/Counter'
 export function HitPoints() {
   const { character, dispatch } = useCharacter()
   const { current, max, temp } = character.hitPoints
+  const [changeAmt, setChangeAmt] = useState('')
+  const amount = Math.max(0, parseInt(changeAmt) || 0)
   const pct = Math.max(0, Math.min(100, (current / max) * 100))
   const isLow = pct < 25
 
@@ -52,6 +55,32 @@ export function HitPoints() {
               onChange={(v) => dispatch({ type: 'SET_TEMP_HP', payload: v })}
             />
           </div>
+        </div>
+
+        {/* Bulk heal / damage */}
+        <div className="flex items-center gap-2 pt-1">
+          <input
+            type="number"
+            min={0}
+            value={changeAmt}
+            onChange={(e) => setChangeAmt(e.target.value)}
+            placeholder="0"
+            className="w-16 text-center bg-sheet-bg border border-sheet-border rounded px-2 py-1 text-sm text-txt-primary focus:outline-none focus:border-dnd-gold"
+          />
+          <button
+            onClick={() => { dispatch({ type: 'SET_HP', payload: current + amount }); setChangeAmt('') }}
+            disabled={amount === 0}
+            className="flex-1 py-1 rounded bg-green-900 hover:bg-green-800 disabled:opacity-40 text-white text-xs font-display"
+          >
+            + Léčit
+          </button>
+          <button
+            onClick={() => { dispatch({ type: 'SET_HP', payload: current - amount }); setChangeAmt('') }}
+            disabled={amount === 0}
+            className="flex-1 py-1 rounded bg-red-900 hover:bg-red-800 disabled:opacity-40 text-white text-xs font-display"
+          >
+            − Zranit
+          </button>
         </div>
 
         {/* Hit Dice */}
