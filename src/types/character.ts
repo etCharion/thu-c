@@ -174,5 +174,18 @@ export interface Character {
   proficienciesWeapons: string[]
   proficienciesTools: string[]
 
+  // Senses
+  darkvision: number | null
+
+  // Character traits & appearance
+  personalityTraits: string
+  ideals: string
+  bonds: string
+  flaws: string
+  appearance: string
+  eyes: string
+  hair: string
+  skin: string
+
   updatedAt: number
 }

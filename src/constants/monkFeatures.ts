@@ -90,7 +90,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     id: 'stunning-strike',
     name: 'Stunning Strike',
     description:
-      'Spend 1 FP when you hit with a Monk weapon or Unarmed Strike. Target: DC 14 CON save or Stunned until start of your next turn (Speed halved and Disadvantage on next attack roll on success).',
+      'Once per turn, spend 1 FP when you hit with a Monk weapon or Unarmed Strike. Target: DC 14 CON save or Stunned until start of your next turn. On a successful save: Speed halved until start of your next turn, and the next attack roll made against it has Advantage.',
     resetsOn: 'none',
     usesMax: null,
     usesRemaining: null,
@@ -122,13 +122,12 @@ export const MONK_FEATURES: ClassFeature[] = [
   {
     id: 'wholeness-of-body',
     name: 'Wholeness of Body',
-    description: 'Bonus Action: heal yourself 1d8+3 HP. 3 uses per Long Rest.',
+    description: 'Bonus Action: heal yourself 1d8+3 HP. 3 uses per Long Rest. Does not cost Focus Points.',
     resetsOn: 'long',
     usesMax: 3,
     usesRemaining: 3,
     source: 'class',
-    resourceType: 'ki',
-    resourceCost: 1,
+    resourceType: 'none',
     sourceLabel: 'Open Hand',
   },
   // Subclass: Warrior of the Open Hand
@@ -198,6 +197,65 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesMax: null,
     usesRemaining: null,
     source: 'feat',
+    resourceType: 'none',
+  },
+  // Monk's Focus sub-features
+  {
+    id: 'patient-defense',
+    name: 'Patient Defense',
+    description:
+      "Bonus Action: take the Disengage action (free). OR spend 1 Focus Point to take both Disengage and Dodge as a Bonus Action.",
+    resetsOn: 'none',
+    usesMax: null,
+    usesRemaining: null,
+    source: 'class',
+    resourceType: 'ki',
+    resourceCost: 1,
+  },
+  {
+    id: 'step-of-the-wind',
+    name: 'Step of the Wind',
+    description:
+      "Bonus Action: take the Dash action (free). OR spend 1 Focus Point to take both Disengage and Dash as a Bonus Action, and your jump distance is doubled for the turn.",
+    resetsOn: 'none',
+    usesMax: null,
+    usesRemaining: null,
+    source: 'class',
+    resourceType: 'ki',
+    resourceCost: 1,
+  },
+  // Dragonborn racial
+  {
+    id: 'darkvision',
+    name: 'Darkvision',
+    description: 'You can see in dim light within 60 ft. as if it were bright light, and in darkness as if it were dim light. You cannot discern color in darkness, only shades of gray.',
+    resetsOn: 'none',
+    usesMax: null,
+    usesRemaining: null,
+    source: 'racial',
+    resourceType: 'none',
+  },
+  {
+    id: 'draconic-ancestry',
+    name: 'Draconic Ancestry (Bronze)',
+    description:
+      'You have a Bronze Dragon ancestor. This grants you a Lightning Breath Weapon and Resistance to Lightning damage.',
+    resetsOn: 'none',
+    usesMax: null,
+    usesRemaining: null,
+    source: 'racial',
+    resourceType: 'none',
+  },
+  // Background feature
+  {
+    id: 'military-rank',
+    name: 'Military Rank',
+    description:
+      'Soldiers loyal to your former organization recognize your authority and defer to your commands. You can invoke your rank to exert influence over soldiers of lower rank and gain access to friendly military encampments and fortresses.',
+    resetsOn: 'none',
+    usesMax: null,
+    usesRemaining: null,
+    source: 'origin',
     resourceType: 'none',
   },
 ]
