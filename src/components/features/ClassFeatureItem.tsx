@@ -1,3 +1,5 @@
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { useCharacter } from '../../context/CharacterContext'
 import type { ClassFeature } from '../../types/character'
 
@@ -34,8 +36,21 @@ export function ClassFeatureItem({ feature }: ClassFeatureItemProps) {
   const showResource =
     feature.resourceType && feature.resourceType !== 'none' && feature.resourceCost
 
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: feature.id,
+  })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : undefined,
+  }
+
   return (
     <div
+      ref={setNodeRef}
+      style={style}
       className={`rounded border p-2 transition-all ${
         isExhausted
           ? 'border-sheet-border bg-sheet-bg opacity-60'
@@ -43,6 +58,17 @@ export function ClassFeatureItem({ feature }: ClassFeatureItemProps) {
       }`}
     >
       <div className="flex items-start justify-between gap-2">
+        {/* Drag handle */}
+        <button
+          {...attributes}
+          {...listeners}
+          className="flex-shrink-0 mt-0.5 text-txt-muted hover:text-txt-secondary cursor-grab active:cursor-grabbing touch-none px-0.5"
+          tabIndex={-1}
+          aria-label="Drag to reorder"
+        >
+          ⠿
+        </button>
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span
