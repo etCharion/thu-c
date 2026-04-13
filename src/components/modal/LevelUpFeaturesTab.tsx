@@ -1,4 +1,4 @@
-import type { ClassFeature, RestType } from '../../types/character'
+import type { ClassFeature, RestType, FeatureResourceType, FeatureSource } from '../../types/character'
 import type { LevelUpDraft } from '../../hooks/useLevelUpDraft'
 import type { DraftAction } from '../../hooks/useLevelUpDraft'
 
@@ -103,6 +103,63 @@ function FeatureRow({ feature, index, total, dispatch }: FeatureRowProps) {
           </select>
         </div>
       </div>
+
+      {/* Source + resource */}
+      <div className="flex flex-wrap items-center gap-4 text-xs border-t border-sheet-border pt-2">
+        <div className="flex items-center gap-1.5">
+          <span className="text-txt-muted">Source:</span>
+          <select
+            value={feature.source ?? 'class'}
+            onChange={(e) => update({ source: e.target.value as FeatureSource })}
+            className="bg-sheet-bg border border-sheet-border rounded px-2 py-0.5 text-xs text-txt-primary focus:outline-none focus:border-dnd-gold/60"
+          >
+            <option value="class">Class</option>
+            <option value="origin">Origin</option>
+            <option value="racial">Racial</option>
+            <option value="feat">Feat</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <span className="text-txt-muted">Label:</span>
+          <input
+            type="text"
+            value={feature.sourceLabel ?? ''}
+            onChange={(e) => update({ sourceLabel: e.target.value || undefined })}
+            placeholder="e.g. Open Hand"
+            className="w-28 bg-sheet-bg border border-sheet-border rounded px-2 py-0.5 text-xs text-txt-primary focus:outline-none focus:border-dnd-gold/60"
+          />
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <span className="text-txt-muted">Resource:</span>
+          <select
+            value={feature.resourceType ?? 'none'}
+            onChange={(e) => update({ resourceType: e.target.value as FeatureResourceType })}
+            className="bg-sheet-bg border border-sheet-border rounded px-2 py-0.5 text-xs text-txt-primary focus:outline-none focus:border-dnd-gold/60"
+          >
+            <option value="none">None</option>
+            <option value="ki">Ki / Focus Points</option>
+            <option value="spell-slot">Spell Slot</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+
+        {(feature.resourceType === 'ki' || feature.resourceType === 'spell-slot' || feature.resourceType === 'custom') && (
+          <div className="flex items-center gap-1.5">
+            <span className="text-txt-muted">Cost:</span>
+            <input
+              type="number"
+              min={1}
+              max={20}
+              value={feature.resourceCost ?? 1}
+              onChange={(e) => update({ resourceCost: Math.max(1, parseInt(e.target.value) || 1) })}
+              className="w-14 bg-sheet-bg border border-sheet-border rounded px-2 py-0.5 text-xs text-txt-primary focus:outline-none focus:border-dnd-gold/60"
+            />
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -120,6 +177,8 @@ function newFeature(): ClassFeature {
     resetsOn: 'none',
     usesMax: null,
     usesRemaining: null,
+    source: 'class',
+    resourceType: 'none',
   }
 }
 

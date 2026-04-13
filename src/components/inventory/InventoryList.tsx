@@ -6,11 +6,28 @@ import { Counter } from '../controls/Counter'
 export function InventoryList() {
   const { character, dispatch } = useCharacter()
   const [showAll, setShowAll] = useState(false)
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+
   const items = showAll ? character.inventory : character.inventory.slice(0, 10)
   const totalWeight = character.inventory.reduce(
     (sum, i) => sum + (i.weight ?? 0) * i.quantity,
     0,
   )
+
+  function addItem() {
+    dispatch({
+      type: 'ADD_INVENTORY_ITEM',
+      payload: {
+        id: crypto.randomUUID(),
+        name: 'New item',
+        quantity: 1,
+        weight: null,
+        equipped: false,
+        notes: '',
+        isMagic: false,
+      },
+    })
+  }
 
   return (
     <SectionCard
@@ -24,51 +41,161 @@ export function InventoryList() {
       }
     >
       <div className="space-y-1">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className={`flex items-center gap-2 py-1.5 px-2 rounded transition-colors ${
-              item.equipped ? 'bg-sheet-elevated' : 'hover:bg-sheet-elevated/50'
-            }`}
-          >
-            {/* Equipped indicator */}
-            <div
-              className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                item.equipped ? 'bg-dnd-green' : 'bg-transparent border border-txt-muted'
-              }`}
-            />
-
-            {/* Name */}
-            <div className="flex-1 min-w-0">
-              <span
-                className={`text-sm ${item.isMagic ? 'text-dnd-gold' : 'text-txt-primary'}`}
+        {items.map((item) => {
+          const isExpanded = expandedId === item.id
+          return (
+            <div key={item.id} className="rounded transition-colors">
+              <div
+                className={`flex items-center gap-2 py-1.5 px-2 rounded ${
+                  item.equipped ? 'bg-sheet-elevated' : 'hover:bg-sheet-elevated/50'
+                }`}
               >
-                {item.name}
-                {item.isMagic && ' ✦'}
-              </span>
-              {item.notes && (
-                <span className="text-xs text-txt-muted ml-2">{item.notes}</span>
+                {/* Equipped toggle */}
+                <button
+                  title={item.equipped ? 'Unequip' : 'Equip'}
+                  onClick={() =>
+                    dispatch({
+                      type: 'UPDATE_INVENTORY',
+                      payload: { id: item.id, equipped: !item.equipped },
+                    })
+                  }
+                  className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors ${
+                    item.equipped
+                      ? 'bg-dnd-green'
+                      : 'bg-transparent border border-txt-muted hover:border-dnd-green'
+                  }`}
+                />
+
+                {/* Name – click to expand */}
+                <button
+                  className="flex-1 min-w-0 text-left"
+                  onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                >
+                  <span
+                    className={`text-sm ${item.isMagic ? 'text-dnd-gold' : 'text-txt-primary'}`}
+                  >
+                    {item.name}
+                    {item.isMagic && ' ✦'}
+                  </span>
+                  {item.notes && !isExpanded && (
+                    <span className="text-xs text-txt-muted ml-2 truncate max-w-[140px] inline-block align-bottom">
+                      {item.notes}
+                    </span>
+                  )}
+                </button>
+
+                {/* Weight */}
+                {item.weight != null && (
+                  <span className="text-xs text-txt-muted flex-shrink-0">
+                    {item.weight} lb
+                  </span>
+                )}
+
+                {/* Qty */}
+                <Counter
+                  value={item.quantity}
+                  min={0}
+                  size="sm"
+                  onChange={(v) =>
+                    dispatch({ type: 'UPDATE_INVENTORY', payload: { id: item.id, quantity: v } })
+                  }
+                />
+
+                {/* Remove */}
+                <button
+                  title="Remove item"
+                  onClick={() =>
+                    dispatch({ type: 'REMOVE_INVENTORY_ITEM', payload: { id: item.id } })
+                  }
+                  className="text-dnd-red/60 hover:text-dnd-red text-xs px-1 flex-shrink-0 transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* Expanded detail */}
+              {isExpanded && (
+                <div className="px-2 pb-2 pt-1 space-y-1.5 bg-sheet-elevated/40 rounded-b border-t border-sheet-border">
+                  <input
+                    type="text"
+                    value={item.name}
+                    onChange={(e) =>
+                      dispatch({
+                        type: 'UPDATE_INVENTORY',
+                        payload: { id: item.id, name: e.target.value },
+                      })
+                    }
+                    placeholder="Item name"
+                    className="w-full bg-sheet-bg border border-sheet-border rounded px-2 py-1 text-sm text-txt-primary focus:outline-none focus:border-dnd-gold/60"
+                  />
+                  <textarea
+                    value={item.notes}
+                    onChange={(e) =>
+                      dispatch({
+                        type: 'UPDATE_INVENTORY',
+                        payload: { id: item.id, notes: e.target.value },
+                      })
+                    }
+                    placeholder="Notes or description…"
+                    rows={3}
+                    className="w-full bg-sheet-bg border border-sheet-border rounded px-2 py-1.5 text-xs text-txt-secondary focus:outline-none focus:border-dnd-gold/60 resize-y"
+                  />
+                  <div className="flex items-center gap-3 text-xs">
+                    <label className="flex items-center gap-1.5 text-txt-secondary cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={item.isMagic}
+                        onChange={(e) =>
+                          dispatch({
+                            type: 'UPDATE_INVENTORY',
+                            payload: { id: item.id, isMagic: e.target.checked },
+                          })
+                        }
+                        className="accent-dnd-gold"
+                      />
+                      Magic item
+                    </label>
+                    <label className="flex items-center gap-1.5 text-txt-secondary cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={item.equipped}
+                        onChange={(e) =>
+                          dispatch({
+                            type: 'UPDATE_INVENTORY',
+                            payload: { id: item.id, equipped: e.target.checked },
+                          })
+                        }
+                        className="accent-dnd-green"
+                      />
+                      Equipped
+                    </label>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-txt-muted">Weight:</span>
+                      <input
+                        type="number"
+                        min={0}
+                        step={0.5}
+                        value={item.weight ?? ''}
+                        onChange={(e) =>
+                          dispatch({
+                            type: 'UPDATE_INVENTORY',
+                            payload: {
+                              id: item.id,
+                              weight: e.target.value === '' ? null : parseFloat(e.target.value),
+                            },
+                          })
+                        }
+                        placeholder="—"
+                        className="w-16 bg-sheet-bg border border-sheet-border rounded px-2 py-0.5 text-xs text-txt-primary focus:outline-none focus:border-dnd-gold/60"
+                      />
+                      <span className="text-txt-muted">lb</span>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
-
-            {/* Weight */}
-            {item.weight != null && (
-              <span className="text-xs text-txt-muted flex-shrink-0">
-                {item.weight} lb
-              </span>
-            )}
-
-            {/* Qty */}
-            <Counter
-              value={item.quantity}
-              min={0}
-              size="sm"
-              onChange={(v) =>
-                dispatch({ type: 'UPDATE_INVENTORY', payload: { id: item.id, quantity: v } })
-              }
-            />
-          </div>
-        ))}
+          )
+        })}
 
         {character.inventory.length > 10 && (
           <button
@@ -78,6 +205,14 @@ export function InventoryList() {
             {showAll ? '▲ Show less' : `▼ Show all ${character.inventory.length} items`}
           </button>
         )}
+
+        {/* Add item */}
+        <button
+          onClick={addItem}
+          className="w-full mt-1 py-1.5 rounded border border-dashed border-sheet-border text-xs text-txt-muted hover:text-txt-secondary hover:border-dnd-gold/40 transition-colors"
+        >
+          + Add item
+        </button>
       </div>
     </SectionCard>
   )

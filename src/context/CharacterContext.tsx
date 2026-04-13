@@ -22,12 +22,16 @@ type CharacterAction =
   | { type: 'SET_HIT_DICE'; payload: number }
   | { type: 'USE_FEATURE'; payload: { id: string } }
   | { type: 'UPDATE_INVENTORY'; payload: Partial<InventoryItem> & { id: string } }
+  | { type: 'ADD_INVENTORY_ITEM'; payload: InventoryItem }
+  | { type: 'REMOVE_INVENTORY_ITEM'; payload: { id: string } }
+  | { type: 'REORDER_INVENTORY'; payload: { from: number; to: number } }
   | { type: 'SET_GOLD'; payload: number }
   | { type: 'SET_INSPIRATION'; payload: boolean }
   | { type: 'SHORT_REST'; payload: { hpRecovered: number } }
   | { type: 'LONG_REST' }
   | { type: 'LEVEL_UP'; payload: LevelUpPayload }
   | { type: 'UPDATE_CHARACTER'; payload: Partial<Character> }
+  | { type: 'REORDER_FEATURES'; payload: { from: number; to: number } }
 
 // ── Reducer ──────────────────────────────────────────────────────────────────
 
@@ -69,15 +73,22 @@ function reducer(state: Character, action: CharacterAction): Character {
         hitDiceRemaining: Math.max(0, Math.min(action.payload, state.hitDiceTotal)),
       }
 
-    case 'USE_FEATURE':
+    case 'USE_FEATURE': {
+      const feature = state.classFeatures.find((f) => f.id === action.payload.id)
+      const kiCost =
+        feature?.resourceType === 'ki' ? (feature.resourceCost ?? 1) : 0
       return {
         ...state,
+        focusPoints: kiCost > 0
+          ? { ...state.focusPoints, current: Math.max(0, state.focusPoints.current - kiCost) }
+          : state.focusPoints,
         classFeatures: state.classFeatures.map((f) =>
           f.id === action.payload.id && f.usesRemaining !== null
             ? { ...f, usesRemaining: Math.max(0, f.usesRemaining - 1) }
             : f,
         ),
       }
+    }
 
     case 'UPDATE_INVENTORY':
       return {
@@ -86,6 +97,29 @@ function reducer(state: Character, action: CharacterAction): Character {
           item.id === action.payload.id ? { ...item, ...action.payload } : item,
         ),
       }
+
+    case 'ADD_INVENTORY_ITEM':
+      return { ...state, inventory: [...state.inventory, action.payload] }
+
+    case 'REMOVE_INVENTORY_ITEM':
+      return {
+        ...state,
+        inventory: state.inventory.filter((item) => item.id !== action.payload.id),
+      }
+
+    case 'REORDER_INVENTORY': {
+      const inv = [...state.inventory]
+      const [moved] = inv.splice(action.payload.from, 1)
+      inv.splice(action.payload.to, 0, moved)
+      return { ...state, inventory: inv }
+    }
+
+    case 'REORDER_FEATURES': {
+      const features = [...state.classFeatures]
+      const [moved] = features.splice(action.payload.from, 1)
+      features.splice(action.payload.to, 0, moved)
+      return { ...state, classFeatures: features }
+    }
 
     case 'SET_GOLD':
       return { ...state, gold: Math.max(0, action.payload) }
