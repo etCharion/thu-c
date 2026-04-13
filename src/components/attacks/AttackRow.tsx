@@ -28,7 +28,8 @@ export function AttackRow({ attack }: AttackRowProps) {
   const dieSize = parseDamageDice(attack.damageDice)
   const effectiveDie = attack.isMartialArts ? Math.max(dieSize, martialArtsDie(ml)) : dieSize
   const diceCount = attack.damageDice.match(/^(\d+)d/)?.[1] ?? '1'
-  const dmgStr = `${diceCount}d${effectiveDie}${formatModifier(abilityDmg)}`
+  const totalDmgBonus = abilityDmg + attack.flatBonus
+  const dmgStr = `${diceCount}d${effectiveDie}${formatModifier(totalDmgBonus)}`
 
   const damageTypeColor: Record<string, string> = {
     bludgeoning: 'text-orange-300',
