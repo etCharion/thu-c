@@ -8,12 +8,13 @@ export function CharacterHeader() {
   const classStr = character.classes.map((c) => `${c.name} ${c.level}`).join(' / ')
 
   return (
-    <div className="bg-sheet-surface border border-sheet-border rounded-lg shadow-card px-4 py-3 flex flex-wrap items-center gap-4">
+    // Dark navy header bar – DnDB style
+    <div className="bg-dnd-navy rounded-lg shadow-card px-4 py-3 flex flex-wrap items-center gap-4">
       <div className="flex-1 min-w-0">
-        <h1 className="font-display text-2xl font-bold text-txt-primary tracking-wide truncate">
+        <h1 className="font-display text-2xl font-bold text-white tracking-wide truncate">
           {character.name}
         </h1>
-        <div className="flex flex-wrap gap-3 mt-1 text-xs text-txt-secondary">
+        <div className="flex flex-wrap gap-2 mt-1 text-xs text-white/50">
           <span className="text-dnd-gold font-semibold">{classStr}</span>
           <span>·</span>
           <span>{character.race}</span>
@@ -26,7 +27,7 @@ export function CharacterHeader() {
       <div className="flex items-center gap-3 flex-wrap">
         <button
           onClick={() => setIsLevelUpOpen(true)}
-          className="px-3 py-1.5 rounded bg-dnd-gold/20 border border-dnd-gold/40 text-dnd-gold text-xs font-display tracking-wider hover:bg-dnd-gold/30 transition-colors"
+          className="px-3 py-1.5 rounded bg-dnd-red hover:bg-dnd-red/80 text-white text-xs font-display tracking-wider transition-colors"
         >
           Level Up
         </button>
@@ -36,16 +37,16 @@ export function CharacterHeader() {
               INSPIRATION
             </span>
           )}
-          <div className="text-xs text-txt-muted">
-            <span className="text-txt-secondary">Proficiency</span>{' '}
-            <span className="text-txt-primary font-bold">+{character.proficiencyBonus}</span>
+          <div className="text-xs text-white/50">
+            <span className="text-white/70">Proficiency</span>{' '}
+            <span className="text-white font-bold">+{character.proficiencyBonus}</span>
           </div>
         </div>
-        <div className="flex gap-2 text-xs text-txt-secondary">
+        <div className="flex gap-2 text-xs">
           {character.resistances.map((r) => (
             <span
               key={r}
-              className="px-1.5 py-0.5 rounded bg-blue-900 border border-blue-700 text-blue-300 capitalize"
+              className="px-1.5 py-0.5 rounded border border-white/20 text-white/60 capitalize"
             >
               ⚡ {r}
             </span>
