@@ -1,6 +1,7 @@
 import type { ClassFeature, RestType, FeatureResourceType, FeatureSource } from '../../types/character'
 import type { LevelUpDraft } from '../../hooks/useLevelUpDraft'
 import type { DraftAction } from '../../hooks/useLevelUpDraft'
+import { RANGER_FEATURES_LEVEL_1 } from '../../constants/rangerFeatures'
 
 interface FeatureRowProps {
   feature: ClassFeature
@@ -182,17 +183,42 @@ function newFeature(): ClassFeature {
   }
 }
 
+const TEMPLATES = [
+  {
+    label: 'Load Ranger L1 (Alt. Ranger)',
+    features: RANGER_FEATURES_LEVEL_1,
+  },
+]
+
 export function LevelUpFeaturesTab({ draft, dispatch }: Props) {
+  const loadTemplate = (features: ClassFeature[]) => {
+    const existingIds = new Set(draft.classFeatures.map((f) => f.id))
+    const toAdd = features.filter((f) => !existingIds.has(f.id))
+    if (toAdd.length === 0) return
+    dispatch({ type: 'BULK_ADD_FEATURES', payload: toAdd })
+  }
+
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
         <p className="text-xs text-txt-muted">{draft.classFeatures.length} features</p>
-        <button
-          onClick={() => dispatch({ type: 'ADD_FEATURE', payload: newFeature() })}
-          className="px-3 py-1 rounded bg-dnd-gold/20 border border-dnd-gold/40 text-dnd-gold text-xs hover:bg-dnd-gold/30 transition-colors"
-        >
-          + Add Feature
-        </button>
+        <div className="flex items-center gap-2">
+          {TEMPLATES.map((t) => (
+            <button
+              key={t.label}
+              onClick={() => loadTemplate(t.features)}
+              className="px-3 py-1 rounded bg-sheet-elevated border border-sheet-border text-txt-secondary text-xs hover:border-dnd-gold/50 hover:text-dnd-gold transition-colors"
+            >
+              {t.label}
+            </button>
+          ))}
+          <button
+            onClick={() => dispatch({ type: 'ADD_FEATURE', payload: newFeature() })}
+            className="px-3 py-1 rounded bg-dnd-gold/20 border border-dnd-gold/40 text-dnd-gold text-xs hover:bg-dnd-gold/30 transition-colors"
+          >
+            + Add Feature
+          </button>
+        </div>
       </div>
 
       <div className="space-y-2 overflow-y-auto max-h-[60vh] pr-1">

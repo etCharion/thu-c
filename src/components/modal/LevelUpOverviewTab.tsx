@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { LevelUpDraft, DerivedStats } from '../../hooks/useLevelUpDraft'
 import type { DraftAction } from '../../hooks/useLevelUpDraft'
 
@@ -43,6 +44,15 @@ function NumericInput({
 export function LevelUpOverviewTab({ draft, derivedStats, dispatch }: Props) {
   const totalLvl = draft.classes.reduce((s, c) => s + c.level, 0)
   const hasASI = ASI_LEVELS.has(totalLvl)
+  const [newClassName, setNewClassName] = useState('')
+
+  const addNewClass = () => {
+    const name = newClassName.trim()
+    if (!name) return
+    if (draft.classes.some((c) => c.name.toLowerCase() === name.toLowerCase())) return
+    dispatch({ type: 'ADD_CLASS', payload: { name, level: 1 } })
+    setNewClassName('')
+  }
 
   return (
     <div className="space-y-6">
@@ -73,8 +83,35 @@ export function LevelUpOverviewTab({ draft, derivedStats, dispatch }: Props) {
                 </button>
               </div>
               <span className="text-xs text-txt-muted">Level {cls.level}</span>
+              {draft.classes.length > 1 && (
+                <button
+                  onClick={() => dispatch({ type: 'REMOVE_CLASS', payload: { index: i } })}
+                  className="ml-auto px-2 py-0.5 rounded text-xs text-dnd-red border border-dnd-red/30 hover:bg-dnd-red/10 transition-colors"
+                >
+                  Remove
+                </button>
+              )}
             </div>
           ))}
+
+          {/* Add new class for multiclassing */}
+          <div className="flex items-center gap-2 pt-1">
+            <input
+              type="text"
+              value={newClassName}
+              onChange={(e) => setNewClassName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && addNewClass()}
+              placeholder="New class name…"
+              className="flex-1 bg-sheet-bg border border-sheet-border rounded px-2 py-1 text-sm text-txt-primary placeholder:text-txt-muted focus:outline-none focus:border-dnd-gold/60"
+            />
+            <button
+              onClick={addNewClass}
+              disabled={!newClassName.trim()}
+              className="px-3 py-1 rounded bg-dnd-gold/20 border border-dnd-gold/40 text-dnd-gold text-xs hover:bg-dnd-gold/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              + Multiclass
+            </button>
+          </div>
         </div>
       </section>
 

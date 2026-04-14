@@ -17,11 +17,14 @@ export interface LevelUpDraft {
 
 export type DraftAction =
   | { type: 'SET_CLASS_LEVEL'; payload: { index: number; level: number } }
+  | { type: 'ADD_CLASS'; payload: { name: string; level: number } }
+  | { type: 'REMOVE_CLASS'; payload: { index: number } }
   | { type: 'SET_ABILITY_SCORE'; payload: { ability: keyof AbilityScores; value: number } }
   | { type: 'SET_MAX_HP'; payload: number }
   | { type: 'SET_AC'; payload: number }
   | { type: 'SET_SPEED'; payload: number }
   | { type: 'ADD_FEATURE'; payload: ClassFeature }
+  | { type: 'BULK_ADD_FEATURES'; payload: ClassFeature[] }
   | { type: 'UPDATE_FEATURE'; payload: { index: number; feature: ClassFeature } }
   | { type: 'REMOVE_FEATURE'; payload: { index: number } }
   | { type: 'MOVE_FEATURE'; payload: { from: number; to: number } }
@@ -39,6 +42,15 @@ function draftReducer(state: LevelUpDraft, action: DraftAction): LevelUpDraft {
         classes: state.classes.map((c, i) =>
           i === action.payload.index ? { ...c, level: action.payload.level } : c,
         ),
+      }
+
+    case 'ADD_CLASS':
+      return { ...state, classes: [...state.classes, action.payload] }
+
+    case 'REMOVE_CLASS':
+      return {
+        ...state,
+        classes: state.classes.filter((_, i) => i !== action.payload.index),
       }
 
     case 'SET_ABILITY_SCORE':
@@ -61,6 +73,9 @@ function draftReducer(state: LevelUpDraft, action: DraftAction): LevelUpDraft {
 
     case 'ADD_FEATURE':
       return { ...state, classFeatures: [...state.classFeatures, action.payload] }
+
+    case 'BULK_ADD_FEATURES':
+      return { ...state, classFeatures: [...state.classFeatures, ...action.payload] }
 
     case 'UPDATE_FEATURE':
       return {
