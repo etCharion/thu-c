@@ -10,18 +10,18 @@ export function CombatStats() {
     <SectionCard title="Combat">
       <div className="grid grid-cols-3 gap-3 text-center">
 
-        {/* AC – shield */}
+        {/* AC – shield, dark navy fill */}
         <div className="flex flex-col items-center gap-1.5">
           <div className="relative w-14 h-16">
             <svg viewBox="0 0 56 64" className="w-full h-full" fill="none">
               <path
                 d="M28 3 L53 15 L53 38 Q53 54 28 61 Q3 54 3 38 L3 15 Z"
-                fill="#1C2130"
+                fill="#1A2237"
                 stroke="#C41E3A"
                 strokeWidth="2"
               />
             </svg>
-            <span className="absolute inset-0 flex items-center justify-center font-display text-2xl font-bold text-txt-primary">
+            <span className="absolute inset-0 flex items-center justify-center font-display text-2xl font-bold text-white">
               {character.armorClass}
             </span>
           </div>
@@ -30,11 +30,11 @@ export function CombatStats() {
           </span>
         </div>
 
-        {/* Initiative */}
+        {/* Initiative – dark navy circle */}
         <div className="flex flex-col items-center gap-1.5">
           <div className="w-14 h-16 flex items-center justify-center">
-            <div className="w-14 h-14 rounded-full border-2 border-dnd-red/50 bg-sheet-elevated flex items-center justify-center">
-              <span className="font-display text-2xl font-bold text-txt-primary">
+            <div className="w-14 h-14 rounded-full bg-dnd-navy border-2 border-dnd-red/60 flex items-center justify-center">
+              <span className="font-display text-2xl font-bold text-white">
                 {formatModifier(initiativeMod)}
               </span>
             </div>
@@ -44,14 +44,14 @@ export function CombatStats() {
           </span>
         </div>
 
-        {/* Speed */}
+        {/* Speed – dark navy square */}
         <div className="flex flex-col items-center gap-1.5">
           <div className="w-14 h-16 flex items-center justify-center">
-            <div className="w-14 h-14 border-2 border-sheet-border bg-sheet-elevated rounded-lg flex flex-col items-center justify-center">
-              <span className="font-display text-xl font-bold text-txt-primary leading-none">
+            <div className="w-14 h-14 bg-dnd-navy border-2 border-sheet-border rounded-lg flex flex-col items-center justify-center">
+              <span className="font-display text-xl font-bold text-white leading-none">
                 {character.speed}
               </span>
-              <span className="text-[10px] text-txt-muted font-body">ft.</span>
+              <span className="text-[10px] text-white/50 font-body">ft.</span>
             </div>
           </div>
           <span className="text-[10px] font-bold tracking-widest uppercase text-txt-muted font-display">
