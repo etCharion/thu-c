@@ -43,7 +43,7 @@ jobs:
         run: npm run build
 
       - name: Upload artifact
-        if: github.ref == 'refs/heads/claude/dnd-character-sheet-app-KhDLI' || github.ref == 'refs/heads/main'
+        if: startsWith(github.ref, 'refs/heads/claude/') || github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
@@ -51,7 +51,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/claude/dnd-character-sheet-app-KhDLI' || github.ref == 'refs/heads/main'
+    if: startsWith(github.ref, 'refs/heads/claude/') || github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

@@ -11,6 +11,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'passive',
   },
   {
     id: 'unarmored-defense',
@@ -21,6 +22,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'passive',
   },
   {
     id: 'monks-focus',
@@ -32,6 +34,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'special',
   },
   {
     id: 'unarmored-movement',
@@ -42,6 +45,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'passive',
   },
   {
     id: 'uncanny-metabolism',
@@ -53,6 +57,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: 1,
     source: 'class',
     resourceType: 'none',
+    actionType: 'special',
   },
   {
     id: 'deflect-attacks',
@@ -65,6 +70,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     source: 'class',
     resourceType: 'ki',
     resourceCost: 1,
+    actionType: 'reaction',
   },
   {
     id: 'slow-fall',
@@ -75,6 +81,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'reaction',
   },
   {
     id: 'extra-attack',
@@ -85,6 +92,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'passive',
   },
   {
     id: 'stunning-strike',
@@ -97,6 +105,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     source: 'class',
     resourceType: 'ki',
     resourceCost: 1,
+    actionType: 'action',
   },
   {
     id: 'empowered-strikes',
@@ -107,6 +116,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'passive',
   },
   {
     id: 'evasion',
@@ -118,6 +128,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'class',
     resourceType: 'none',
+    actionType: 'passive',
   },
   {
     id: 'wholeness-of-body',
@@ -129,6 +140,20 @@ export const MONK_FEATURES: ClassFeature[] = [
     source: 'class',
     resourceType: 'none',
     sourceLabel: 'Open Hand',
+    actionType: 'bonus-action',
+  },
+  // Monk's Focus: Flurry of Blows
+  {
+    id: 'flurry-of-blows',
+    name: 'Flurry of Blows',
+    description: 'You can expend 1 Focus Point to make two Unarmed Strikes as a Bonus Action.',
+    resetsOn: 'none',
+    usesMax: null,
+    usesRemaining: null,
+    source: 'class',
+    resourceType: 'ki',
+    resourceCost: 1,
+    actionType: 'bonus-action',
   },
   // Subclass: Warrior of the Open Hand
   {
@@ -142,6 +167,57 @@ export const MONK_FEATURES: ClassFeature[] = [
     source: 'class',
     resourceType: 'none',
     sourceLabel: 'Open Hand',
+    actionType: 'bonus-action',
+  },
+  // Open Hand sub-effects (Addle / Push / Topple)
+  {
+    id: 'flurry-addle',
+    name: 'Flurry of Blows: Addle',
+    description: "When you hit a creature with an attack granted by Flurry of Blows, the target can't make Opportunity Attacks until the start of its next turn.",
+    resetsOn: 'none',
+    usesMax: null,
+    usesRemaining: null,
+    source: 'class',
+    sourceLabel: 'Open Hand',
+    resourceType: 'none',
+    actionType: 'bonus-action',
+  },
+  {
+    id: 'flurry-push',
+    name: 'Flurry of Blows: Push',
+    description: 'When you hit a creature with an attack granted by Flurry of Blows, the target must succeed on a DC 14 Str. saving throw or be pushed 15 ft. away from you.',
+    resetsOn: 'none',
+    usesMax: null,
+    usesRemaining: null,
+    source: 'class',
+    sourceLabel: 'Open Hand',
+    resourceType: 'none',
+    actionType: 'bonus-action',
+  },
+  {
+    id: 'flurry-topple',
+    name: 'Flurry of Blows: Topple',
+    description: 'When you hit a creature with an attack granted by Flurry of Blows, the target must succeed on a DC 14 Dex. saving throw or have the Prone condition.',
+    resetsOn: 'none',
+    usesMax: null,
+    usesRemaining: null,
+    source: 'class',
+    sourceLabel: 'Open Hand',
+    resourceType: 'none',
+    actionType: 'bonus-action',
+  },
+  // Deflect Attacks: Redirect (separate entry)
+  {
+    id: 'deflect-redirect',
+    name: 'Deflect Attack: Redirect Attack',
+    description: "If you reduce the damage to 0 via Deflect Attacks, you can expend 1 Focus Point to redirect some of the attack's force. If you do, choose a creature you can see within 5 ft. of you if it was melee, or a creature you can see within 60 ft. that isn't behind Total Cover if the attack was ranged. The creature must succeed on a DC 14 Dex. saving throw or take 2d8+4 damage of the same type dealt by the attack.",
+    resetsOn: 'none',
+    usesMax: null,
+    usesRemaining: null,
+    source: 'class',
+    resourceType: 'ki',
+    resourceCost: 1,
+    actionType: 'reaction',
   },
   // Dragonborn
   {
@@ -154,6 +230,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: 3,
     source: 'racial',
     resourceType: 'none',
+    actionType: 'action',
   },
   {
     id: 'draconic-flight',
@@ -165,6 +242,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: 1,
     source: 'racial',
     resourceType: 'none',
+    actionType: 'bonus-action',
   },
   {
     id: 'draconic-resistance',
@@ -175,6 +253,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'racial',
     resourceType: 'none',
+    actionType: 'passive',
   },
   // Feats
   {
@@ -187,6 +266,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: 1,
     source: 'feat',
     resourceType: 'none',
+    actionType: 'special',
   },
   {
     id: 'savage-attacker',
@@ -198,6 +278,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'feat',
     resourceType: 'none',
+    actionType: 'passive',
   },
   // Monk's Focus sub-features
   {
@@ -211,6 +292,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     source: 'class',
     resourceType: 'ki',
     resourceCost: 1,
+    actionType: 'bonus-action',
   },
   {
     id: 'step-of-the-wind',
@@ -223,6 +305,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     source: 'class',
     resourceType: 'ki',
     resourceCost: 1,
+    actionType: 'bonus-action',
   },
   // Dragonborn racial
   {
@@ -234,6 +317,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'racial',
     resourceType: 'none',
+    actionType: 'passive',
   },
   {
     id: 'draconic-ancestry',
@@ -245,6 +329,7 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'racial',
     resourceType: 'none',
+    actionType: 'passive',
   },
   // Background feature
   {
@@ -257,5 +342,6 @@ export const MONK_FEATURES: ClassFeature[] = [
     usesRemaining: null,
     source: 'origin',
     resourceType: 'none',
+    actionType: 'passive',
   },
 ]
