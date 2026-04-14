@@ -26,17 +26,17 @@ export function SkillList() {
               <div
                 className={`w-2.5 h-2.5 rounded-full flex-shrink-0 border ${
                   entry.expertise
-                    ? 'bg-dnd-gold border-dnd-gold'
+                    ? 'bg-dnd-gold-light border-dnd-gold-light'
                     : entry.proficient
-                    ? 'bg-dnd-green border-dnd-green'
+                    ? 'bg-dnd-red border-dnd-red'
                     : 'bg-transparent border-txt-muted'
                 }`}
               />
-              <span className="text-sm font-bold text-dnd-gold w-8 tabular-nums text-right">
+              <span className="text-sm font-bold text-txt-primary w-8 tabular-nums text-right">
                 {formatModifier(total)}
               </span>
               <span className="text-sm text-txt-secondary flex-1">{label}</span>
-              <span className="text-xs text-txt-muted uppercase">{ability}</span>
+              <span className="text-[10px] font-bold text-txt-muted uppercase tracking-wider">{ability}</span>
             </div>
           )
         })}

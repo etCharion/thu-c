@@ -26,10 +26,10 @@ export function SavingThrows() {
             <div key={key} className="flex items-center gap-2">
               <div
                 className={`w-3 h-3 rounded-full border-2 flex-shrink-0 ${
-                  proficient ? 'bg-dnd-green border-dnd-green' : 'bg-transparent border-txt-muted'
+                  proficient ? 'bg-dnd-red border-dnd-red' : 'bg-transparent border-txt-muted'
                 }`}
               />
-              <span className="text-sm font-bold text-dnd-gold w-8 tabular-nums">
+              <span className="text-sm font-bold text-txt-primary w-8 tabular-nums">
                 {formatModifier(mod)}
               </span>
               <span className="text-sm text-txt-secondary">{label}</span>
