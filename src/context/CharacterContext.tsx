@@ -218,6 +218,7 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = React.useState(true)
   const pendingRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isRemoteUpdate = useRef(false)
+  const skippedSyncChar = useRef<Character | null>(null)
 
   // Subscribe to Firestore
   useEffect(() => {
@@ -233,8 +234,15 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
         isRemoteUpdate.current = true
         dispatch({ type: 'LOAD_CHARACTER', payload: fixedData })
         setIsLoading(false)
-        // reset flag after dispatch
-        setTimeout(() => { isRemoteUpdate.current = false }, 0)
+        // Reset flag after dispatch; if a local save was skipped due to
+        // this remote update, flush it now so it isn't lost
+        setTimeout(() => {
+          isRemoteUpdate.current = false
+          if (skippedSyncChar.current) {
+            syncToFirestore(skippedSyncChar.current)
+            skippedSyncChar.current = null
+          }
+        }, 0)
       },
       async () => {
         // No document yet — seed it
@@ -273,8 +281,15 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    if (!isLoading && !isRemoteUpdate.current) {
-      syncToFirestore(character)
+    if (!isLoading) {
+      if (!isRemoteUpdate.current) {
+        skippedSyncChar.current = null
+        syncToFirestore(character)
+      } else {
+        // A remote update is in flight; remember this local state so we
+        // can flush it once isRemoteUpdate resets (see setTimeout above)
+        skippedSyncChar.current = character
+      }
     }
   }, [character, isLoading, syncToFirestore])
 

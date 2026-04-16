@@ -29,7 +29,7 @@ export function CharacterHeader() {
           onClick={() => setIsLevelUpOpen(true)}
           className="px-3 py-1.5 rounded bg-dnd-red hover:bg-dnd-red/80 text-white text-xs font-display tracking-wider transition-colors"
         >
-          Level Up
+          Nastavení
         </button>
         <div className="flex items-center gap-1.5">
           {character.inspiration && (
