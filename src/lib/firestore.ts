@@ -32,6 +32,7 @@ export async function updateCharacterField(
 
 export function subscribeToCharacter(
   onData: (character: Character) => void,
+  onNotFound: () => void,
   onError?: (err: Error) => void,
 ): Unsubscribe {
   return onSnapshot(
@@ -39,6 +40,8 @@ export function subscribeToCharacter(
     (snap) => {
       if (snap.exists()) {
         onData(snap.data() as Character)
+      } else {
+        onNotFound()
       }
     },
     (err) => {

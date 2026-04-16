@@ -3,7 +3,7 @@ import { useCharacter } from '../../context/CharacterContext'
 import { LevelUpModal } from '../modal/LevelUpModal'
 
 export function CharacterHeader() {
-  const { character } = useCharacter()
+  const { character, isFirestoreConnected } = useCharacter()
   const [isLevelUpOpen, setIsLevelUpOpen] = useState(false)
   const classStr = character.classes.map((c) => `${c.name} ${c.level}`).join(' / ')
 
@@ -31,6 +31,10 @@ export function CharacterHeader() {
         >
           Nastavení
         </button>
+        <span
+          title={isFirestoreConnected ? 'Firestore připojeno' : 'Firestore offline – změny uloženy lokálně'}
+          className={`w-2 h-2 rounded-full ${isFirestoreConnected ? 'bg-green-400' : 'bg-yellow-400'}`}
+        />
         <div className="flex items-center gap-1.5">
           {character.inspiration && (
             <span className="px-2 py-0.5 rounded-full bg-dnd-gold text-black text-xs font-bold font-display">

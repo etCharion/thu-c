@@ -11,6 +11,28 @@ import { proficiencyBonus, totalLevel, monkLevel, kiMax } from '../lib/dnd5e'
 import { updateCharacterField, subscribeToCharacter, saveCharacter } from '../lib/firestore'
 import { CHARACTER_SEED } from '../constants/characterSeed'
 
+// ── localStorage helpers ─────────────────────────────────────────────────────
+
+const LS_KEY = 'thu-c-character'
+
+function saveToLocalStorage(char: Character): void {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(char))
+  } catch {
+    // quota exceeded or private browsing — silently ignore
+  }
+}
+
+function loadFromLocalStorage(): Character | null {
+  try {
+    const raw = localStorage.getItem(LS_KEY)
+    if (!raw) return null
+    return JSON.parse(raw) as Character
+  } catch {
+    return null
+  }
+}
+
 // ── Actions ─────────────────────────────────────────────────────────────────
 
 type CharacterAction =
@@ -209,6 +231,7 @@ interface CharacterContextValue {
   character: Character
   dispatch: React.Dispatch<CharacterAction>
   isLoading: boolean
+  isFirestoreConnected: boolean
 }
 
 const CharacterContext = createContext<CharacterContextValue | null>(null)
@@ -216,26 +239,42 @@ const CharacterContext = createContext<CharacterContextValue | null>(null)
 export function CharacterProvider({ children }: { children: React.ReactNode }) {
   const [character, dispatch] = useReducer(reducer, CHARACTER_SEED)
   const [isLoading, setIsLoading] = React.useState(true)
+  const [isFirestoreConnected, setIsFirestoreConnected] = React.useState(false)
   const pendingRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isRemoteUpdate = useRef(false)
   const skippedSyncChar = useRef<Character | null>(null)
+  const firestoreLoadedRef = useRef(false)
 
-  // Subscribe to Firestore
+  // Subscribe to Firestore; fall back to localStorage on error or timeout
   useEffect(() => {
+    // Safety-net: if Firestore hasn't responded in 5 s, use localStorage
+    const fallbackTimer = setTimeout(() => {
+      if (firestoreLoadedRef.current) return
+      console.warn('Firestore timeout — loading from localStorage')
+      const local = loadFromLocalStorage()
+      if (local) dispatch({ type: 'LOAD_CHARACTER', payload: local })
+      setIsLoading(false)
+    }, 5000)
+
     const unsub = subscribeToCharacter(
       (data) => {
-        // Migrate incorrect name if needed
+        firestoreLoadedRef.current = true
+        clearTimeout(fallbackTimer)
+        setIsFirestoreConnected(true)
+
+        // Migrate incorrect name if still present in Firestore
         const fixedData: Character = data.name === "Vrchní Šišník Thu'C"
           ? { ...data, name: "Vrchní Číšník Thu'C" }
           : data
         if (data.name !== fixedData.name) {
           updateCharacterField({ name: fixedData.name }).catch(console.error)
         }
+
         isRemoteUpdate.current = true
         dispatch({ type: 'LOAD_CHARACTER', payload: fixedData })
         setIsLoading(false)
-        // Reset flag after dispatch; if a local save was skipped due to
-        // this remote update, flush it now so it isn't lost
+
+        // Reset flag; flush any local save that was skipped during this update
         setTimeout(() => {
           isRemoteUpdate.current = false
           if (skippedSyncChar.current) {
@@ -245,16 +284,39 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
         }, 0)
       },
       async () => {
-        // No document yet — seed it
-        await saveCharacter(CHARACTER_SEED)
+        // Document doesn't exist yet — seed Firestore with initial data
+        firestoreLoadedRef.current = true
+        clearTimeout(fallbackTimer)
+        setIsFirestoreConnected(true)
+        const local = loadFromLocalStorage()
+        const seed = local ?? CHARACTER_SEED
+        await saveCharacter(seed).catch(console.error)
+        if (local) dispatch({ type: 'LOAD_CHARACTER', payload: local })
+        setIsLoading(false)
+      },
+      (err) => {
+        // Firestore error (permissions, network, missing config) — use localStorage
+        console.error('Firestore unavailable:', err)
+        firestoreLoadedRef.current = true
+        clearTimeout(fallbackTimer)
+        setIsFirestoreConnected(false)
+        const local = loadFromLocalStorage()
+        if (local) dispatch({ type: 'LOAD_CHARACTER', payload: local })
         setIsLoading(false)
       },
     )
-    return unsub
-  }, [])
 
-  // Debounced Firestore sync on state changes
+    return () => {
+      unsub()
+      clearTimeout(fallbackTimer)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Debounced Firestore sync + immediate localStorage save on every change
   const syncToFirestore = useCallback((state: Character) => {
+    // localStorage is always reliable — save immediately
+    saveToLocalStorage(state)
+
     if (pendingRef.current) clearTimeout(pendingRef.current)
     pendingRef.current = setTimeout(() => {
       updateCharacterField({
@@ -286,15 +348,14 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
         skippedSyncChar.current = null
         syncToFirestore(character)
       } else {
-        // A remote update is in flight; remember this local state so we
-        // can flush it once isRemoteUpdate resets (see setTimeout above)
+        // Remote update in flight — remember for flush after it finishes
         skippedSyncChar.current = character
       }
     }
   }, [character, isLoading, syncToFirestore])
 
   return (
-    <CharacterContext.Provider value={{ character, dispatch, isLoading }}>
+    <CharacterContext.Provider value={{ character, dispatch, isLoading, isFirestoreConnected }}>
       {children}
     </CharacterContext.Provider>
   )
