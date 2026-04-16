@@ -3,7 +3,7 @@ import { MONK_FEATURES } from './monkFeatures'
 
 export const CHARACTER_SEED: Character = {
   id: 'thu-c',
-  name: "Vrchní Šišník Thu'C",
+  name: "Vrchní Číšník Thu'C",
   race: 'Dragonborn (Bronze)',
   background: 'Soldier',
   alignment: 'Chaotic Neutral',

@@ -223,8 +223,15 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const unsub = subscribeToCharacter(
       (data) => {
+        // Migrate incorrect name if needed
+        const fixedData: Character = data.name === "Vrchní Šišník Thu'C"
+          ? { ...data, name: "Vrchní Číšník Thu'C" }
+          : data
+        if (data.name !== fixedData.name) {
+          updateCharacterField({ name: fixedData.name }).catch(console.error)
+        }
         isRemoteUpdate.current = true
-        dispatch({ type: 'LOAD_CHARACTER', payload: data })
+        dispatch({ type: 'LOAD_CHARACTER', payload: fixedData })
         setIsLoading(false)
         // reset flag after dispatch
         setTimeout(() => { isRemoteUpdate.current = false }, 0)
@@ -243,6 +250,7 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
     if (pendingRef.current) clearTimeout(pendingRef.current)
     pendingRef.current = setTimeout(() => {
       updateCharacterField({
+        name: state.name,
         hitPoints: state.hitPoints,
         focusPoints: state.focusPoints,
         deathSaves: state.deathSaves,

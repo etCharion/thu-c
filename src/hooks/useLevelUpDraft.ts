@@ -16,6 +16,7 @@ export interface LevelUpDraft {
 }
 
 export type DraftAction =
+  | { type: 'RESET'; payload: Character }
   | { type: 'SET_CLASS_LEVEL'; payload: { index: number; level: number } }
   | { type: 'ADD_CLASS'; payload: { name: string; level: number } }
   | { type: 'REMOVE_CLASS'; payload: { index: number } }
@@ -34,8 +35,26 @@ export type DraftAction =
   | { type: 'ADD_PROFICIENCY'; payload: { field: 'proficienciesWeapons' | 'proficienciesTools' | 'languages'; value: string } }
   | { type: 'REMOVE_PROFICIENCY'; payload: { field: 'proficienciesWeapons' | 'proficienciesTools' | 'languages'; index: number } }
 
+function draftFromCharacter(c: Character): LevelUpDraft {
+  return {
+    classes: c.classes,
+    abilityScores: c.abilityScores,
+    hitPoints: c.hitPoints,
+    attacks: c.attacks,
+    classFeatures: c.classFeatures,
+    proficienciesWeapons: c.proficienciesWeapons,
+    proficienciesTools: c.proficienciesTools,
+    languages: c.languages,
+    armorClass: c.armorClass,
+    speed: c.speed,
+  }
+}
+
 function draftReducer(state: LevelUpDraft, action: DraftAction): LevelUpDraft {
   switch (action.type) {
+    case 'RESET':
+      return draftFromCharacter(action.payload)
+
     case 'SET_CLASS_LEVEL':
       return {
         ...state,
@@ -145,20 +164,7 @@ export interface UseLevelUpDraftReturn {
 }
 
 export function useLevelUpDraft(character: Character): UseLevelUpDraftReturn {
-  const initialDraft: LevelUpDraft = {
-    classes: character.classes,
-    abilityScores: character.abilityScores,
-    hitPoints: character.hitPoints,
-    attacks: character.attacks,
-    classFeatures: character.classFeatures,
-    proficienciesWeapons: character.proficienciesWeapons,
-    proficienciesTools: character.proficienciesTools,
-    languages: character.languages,
-    armorClass: character.armorClass,
-    speed: character.speed,
-  }
-
-  const [draft, dispatch] = useReducer(draftReducer, initialDraft)
+  const [draft, dispatch] = useReducer(draftReducer, character, draftFromCharacter)
 
   const derivedStats = useMemo((): DerivedStats => {
     const lvl = totalLevel(draft.classes)

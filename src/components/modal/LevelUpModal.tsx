@@ -28,12 +28,13 @@ export function LevelUpModal({ isOpen, onClose }: Props) {
   const { draft, derivedStats, dispatch: draftDispatch, buildPayload } = useLevelUpDraft(character)
   const firstFocusRef = useRef<HTMLButtonElement>(null)
 
-  // Focus first element when opened
+  // Reset draft from current character each time modal opens
   useEffect(() => {
     if (isOpen) {
+      draftDispatch({ type: 'RESET', payload: character })
       setTimeout(() => firstFocusRef.current?.focus(), 50)
     }
-  }, [isOpen])
+  }, [isOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Escape key to close
   useEffect(() => {
