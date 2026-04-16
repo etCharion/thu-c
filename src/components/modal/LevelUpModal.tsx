@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useCharacter } from '../../context/CharacterContext'
 import { useLevelUpDraft } from '../../hooks/useLevelUpDraft'
+import { updateCharacterField } from '../../lib/firestore'
 import { LevelUpOverviewTab } from './LevelUpOverviewTab'
 import { LevelUpFeaturesTab } from './LevelUpFeaturesTab'
 import { LevelUpAttacksTab } from './LevelUpAttacksTab'
@@ -28,12 +29,13 @@ export function LevelUpModal({ isOpen, onClose }: Props) {
   const { draft, derivedStats, dispatch: draftDispatch, buildPayload } = useLevelUpDraft(character)
   const firstFocusRef = useRef<HTMLButtonElement>(null)
 
-  // Focus first element when opened
+  // Reset draft from current character each time modal opens
   useEffect(() => {
     if (isOpen) {
+      draftDispatch({ type: 'RESET', payload: character })
       setTimeout(() => firstFocusRef.current?.focus(), 50)
     }
-  }, [isOpen])
+  }, [isOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Escape key to close
   useEffect(() => {
@@ -48,7 +50,23 @@ export function LevelUpModal({ isOpen, onClose }: Props) {
   if (!isOpen) return null
 
   const handleSave = () => {
-    dispatch({ type: 'LEVEL_UP', payload: buildPayload() })
+    const payload = buildPayload()
+    dispatch({ type: 'LEVEL_UP', payload })
+    // Write directly to Firestore to bypass the debounced sync's
+    // isRemoteUpdate race condition (snapshot + LEVEL_UP batched together).
+    // hitPoints intentionally excluded — current HP may have changed while
+    // the modal was open; the debounced sync handles it separately.
+    updateCharacterField({
+      attacks: payload.attacks,
+      classFeatures: payload.classFeatures,
+      classes: payload.classes,
+      abilityScores: payload.abilityScores,
+      armorClass: payload.armorClass,
+      speed: payload.speed,
+      proficienciesWeapons: payload.proficienciesWeapons,
+      proficienciesTools: payload.proficienciesTools,
+      languages: payload.languages,
+    }).catch(console.error)
     onClose()
   }
 
@@ -69,7 +87,7 @@ export function LevelUpModal({ isOpen, onClose }: Props) {
       <div className="relative w-full max-w-3xl bg-sheet-surface border border-sheet-border rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-sheet-border">
-          <h2 className="font-display text-xl font-bold text-dnd-gold tracking-wide">Level Up</h2>
+          <h2 className="font-display text-xl font-bold text-dnd-gold tracking-wide">Nastavení</h2>
           <button
             ref={firstFocusRef}
             onClick={onClose}
