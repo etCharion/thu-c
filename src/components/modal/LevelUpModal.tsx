@@ -6,8 +6,9 @@ import { LevelUpFeaturesTab } from './LevelUpFeaturesTab'
 import { LevelUpAttacksTab } from './LevelUpAttacksTab'
 import { LevelUpAbilityScoresTab } from './LevelUpAbilityScoresTab'
 import { LevelUpProficienciesTab } from './LevelUpProficienciesTab'
+import { LevelUpTroubleshootingTab } from './LevelUpTroubleshootingTab'
 
-type TabKey = 'overview' | 'features' | 'attacks' | 'ability' | 'proficiencies'
+type TabKey = 'overview' | 'features' | 'attacks' | 'ability' | 'proficiencies' | 'troubleshooting'
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'overview', label: 'Overview' },
@@ -15,6 +16,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: 'attacks', label: 'Attacks' },
   { key: 'ability', label: 'Ability Scores' },
   { key: 'proficiencies', label: 'Proficiencies' },
+  { key: 'troubleshooting', label: 'Troubleshooting' },
 ]
 
 interface Props {
@@ -119,6 +121,9 @@ export function LevelUpModal({ isOpen, onClose }: Props) {
           )}
           {activeTab === 'proficiencies' && (
             <LevelUpProficienciesTab draft={draft} dispatch={draftDispatch} />
+          )}
+          {activeTab === 'troubleshooting' && (
+            <LevelUpTroubleshootingTab />
           )}
         </div>
 

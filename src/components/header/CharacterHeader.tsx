@@ -3,7 +3,7 @@ import { useCharacter } from '../../context/CharacterContext'
 import { LevelUpModal } from '../modal/LevelUpModal'
 
 export function CharacterHeader() {
-  const { character } = useCharacter()
+  const { character, syncStatus, isOnline } = useCharacter()
   const [isLevelUpOpen, setIsLevelUpOpen] = useState(false)
   const classStr = character.classes.map((c) => `${c.name} ${c.level}`).join(' / ')
 
@@ -42,7 +42,22 @@ export function CharacterHeader() {
             <span className="text-white font-bold">+{character.proficiencyBonus}</span>
           </div>
         </div>
-        <div className="flex gap-2 text-xs">
+        <div className="flex gap-2 text-xs items-center">
+          {!isOnline && (
+            <span className="text-dnd-red text-[10px] uppercase font-bold tracking-widest bg-dnd-red/10 px-2 py-0.5 rounded">
+              Offline
+            </span>
+          )}
+          {isOnline && syncStatus === 'saving' && (
+            <span className="text-dnd-gold animate-pulse text-[10px] uppercase font-bold tracking-widest">
+              Ukládám...
+            </span>
+          )}
+          {isOnline && syncStatus === 'error' && (
+            <span className="text-dnd-red text-[10px] uppercase font-bold tracking-widest">
+              Chyba uložení!
+            </span>
+          )}
           {character.resistances.map((r) => (
             <span
               key={r}
