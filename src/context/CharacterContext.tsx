@@ -221,25 +221,35 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
   const [syncStatus, setSyncStatus] = React.useState<'synced' | 'saving' | 'error'>('synced')
   const [isOnline, setIsOnline] = React.useState(true)
   const pendingRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const isRemoteUpdate = useRef(false)
+  const lastSyncedState = useRef<string>('')
 
   // Debounced Firestore sync on state changes
   const syncToFirestore = useCallback((state: Character) => {
+    const serialized = JSON.stringify(state)
+    if (serialized === lastSyncedState.current) return
+
     if (pendingRef.current) clearTimeout(pendingRef.current)
     setSyncStatus('saving')
     pendingRef.current = setTimeout(() => {
-      // Use saveCharacter to ensure ALL fields are persisted,
-      // including new ones added to the type definition.
+      // Double check before saving if state hasn't changed since debounce started
+      // or if it matches what we last received from server
+      if (JSON.stringify(state) === lastSyncedState.current) {
+        setSyncStatus('synced')
+        return
+      }
+
       saveCharacter(state)
-        .then(() => setSyncStatus('synced'))
+        .then(() => {
+          lastSyncedState.current = JSON.stringify(state)
+          setSyncStatus('synced')
+        })
         .catch((err) => {
           console.error('Failed to sync to Firestore:', err)
           setSyncStatus('error')
         })
-    }, 1000) // Increased debounce to 1s to be safer
+    }, 1000)
   }, [])
 
-  // Subscribe to Firestore
   // Monitor online status
   useEffect(() => {
     const handleOnline = () => setIsOnline(true)
@@ -252,17 +262,20 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
+  // Subscribe to Firestore
   useEffect(() => {
     const unsub = subscribeToCharacter(
-      (data) => {
+      (data, hasPendingWrites) => {
+        // If snapshot comes from our own local write, ignore it to prevent loops
+        if (hasPendingWrites) {
+          console.log('Ignoring snapshot with pending writes (local update)')
+          return
+        }
+
         if (!data) {
           console.log('No character data found, seeding from CHARACTER_SEED...')
-          // No document yet — seed it
           saveCharacter(CHARACTER_SEED)
-            .then(() => {
-              console.log('Seed successful')
-              setIsLoading(false)
-            })
+            .then(() => setIsLoading(false))
             .catch((err) => {
               console.error('Seed failed:', err)
               setIsLoading(false)
@@ -275,22 +288,18 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
           ? { ...data, name: "Vrchní Číšník Thu'C" }
           : data
 
-        isRemoteUpdate.current = true
-        dispatch({ type: 'LOAD_CHARACTER', payload: fixedData })
+        const serialized = JSON.stringify(fixedData)
+        if (serialized !== lastSyncedState.current) {
+          console.log('Remote data changed, updating local state')
+          lastSyncedState.current = serialized
+          dispatch({ type: 'LOAD_CHARACTER', payload: fixedData })
+        }
+
         setIsLoading(false)
 
         if (data.name !== fixedData.name) {
-          // If migration happened, we want to save it back.
-          // Since isRemoteUpdate is true, the useEffect will skip this,
-          // so we manually trigger the sync.
           syncToFirestore(fixedData)
         }
-
-        // Reset flag after dispatch. We use a timeout to ensure
-        // the useEffect triggered by the dispatch has finished.
-        setTimeout(() => {
-          isRemoteUpdate.current = false
-        }, 0)
       },
       (err) => {
         console.error('Firestore subscription error:', err)
@@ -301,7 +310,7 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
   }, [syncToFirestore])
 
   useEffect(() => {
-    if (!isLoading && !isRemoteUpdate.current) {
+    if (!isLoading) {
       syncToFirestore(character)
     }
   }, [character, isLoading, syncToFirestore])
