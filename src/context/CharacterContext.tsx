@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import type { Character, DeathSaves, InventoryItem, LevelUpPayload } from '../types/character'
 import { proficiencyBonus, totalLevel, monkLevel, kiMax } from '../lib/dnd5e'
-import { updateCharacterField, subscribeToCharacter, saveCharacter } from '../lib/firestore'
+import { subscribeToCharacter, saveCharacter } from '../lib/firestore'
 import { CHARACTER_SEED } from '../constants/characterSeed'
 
 // ── Actions ─────────────────────────────────────────────────────────────────
@@ -218,78 +218,62 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = React.useState(true)
   const pendingRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isRemoteUpdate = useRef(false)
-  const skippedSyncChar = useRef<Character | null>(null)
-
-  // Subscribe to Firestore
-  useEffect(() => {
-    const unsub = subscribeToCharacter(
-      (data) => {
-        // Migrate incorrect name if needed
-        const fixedData: Character = data.name === "Vrchní Šišník Thu'C"
-          ? { ...data, name: "Vrchní Číšník Thu'C" }
-          : data
-        if (data.name !== fixedData.name) {
-          updateCharacterField({ name: fixedData.name }).catch(console.error)
-        }
-        isRemoteUpdate.current = true
-        dispatch({ type: 'LOAD_CHARACTER', payload: fixedData })
-        setIsLoading(false)
-        // Reset flag after dispatch; if a local save was skipped due to
-        // this remote update, flush it now so it isn't lost
-        setTimeout(() => {
-          isRemoteUpdate.current = false
-          if (skippedSyncChar.current) {
-            syncToFirestore(skippedSyncChar.current)
-            skippedSyncChar.current = null
-          }
-        }, 0)
-      },
-      async () => {
-        // No document yet — seed it
-        await saveCharacter(CHARACTER_SEED)
-        setIsLoading(false)
-      },
-    )
-    return unsub
-  }, [])
 
   // Debounced Firestore sync on state changes
   const syncToFirestore = useCallback((state: Character) => {
     if (pendingRef.current) clearTimeout(pendingRef.current)
     pendingRef.current = setTimeout(() => {
-      updateCharacterField({
-        name: state.name,
-        hitPoints: state.hitPoints,
-        focusPoints: state.focusPoints,
-        deathSaves: state.deathSaves,
-        hitDiceRemaining: state.hitDiceRemaining,
-        classFeatures: state.classFeatures,
-        inventory: state.inventory,
-        gold: state.gold,
-        inspiration: state.inspiration,
-        classes: state.classes,
-        abilityScores: state.abilityScores,
-        armorClass: state.armorClass,
-        speed: state.speed,
-        proficiencyBonus: state.proficiencyBonus,
-        attacks: state.attacks,
-        proficienciesWeapons: state.proficienciesWeapons,
-        proficienciesTools: state.proficienciesTools,
-        languages: state.languages,
-      }).catch(console.error)
+      // Use saveCharacter to ensure ALL fields are persisted,
+      // including new ones added to the type definition.
+      saveCharacter(state).catch(console.error)
     }, 300)
   }, [])
 
+  // Subscribe to Firestore
   useEffect(() => {
-    if (!isLoading) {
-      if (!isRemoteUpdate.current) {
-        skippedSyncChar.current = null
-        syncToFirestore(character)
-      } else {
-        // A remote update is in flight; remember this local state so we
-        // can flush it once isRemoteUpdate resets (see setTimeout above)
-        skippedSyncChar.current = character
-      }
+    const unsub = subscribeToCharacter(
+      (data) => {
+        if (!data) {
+          // No document yet — seed it
+          saveCharacter(CHARACTER_SEED)
+            .then(() => setIsLoading(false))
+            .catch(console.error)
+          return
+        }
+
+        // Migrate incorrect name if needed
+        const fixedData: Character = data.name === "Vrchní Šišník Thu'C"
+          ? { ...data, name: "Vrchní Číšník Thu'C" }
+          : data
+
+        isRemoteUpdate.current = true
+        dispatch({ type: 'LOAD_CHARACTER', payload: fixedData })
+        setIsLoading(false)
+
+        if (data.name !== fixedData.name) {
+          // If migration happened, we want to save it back.
+          // Since isRemoteUpdate is true, the useEffect will skip this,
+          // so we manually trigger the sync.
+          syncToFirestore(fixedData)
+        }
+
+        // Reset flag after dispatch. We use a timeout to ensure
+        // the useEffect triggered by the dispatch has finished.
+        setTimeout(() => {
+          isRemoteUpdate.current = false
+        }, 0)
+      },
+      (err) => {
+        console.error('Firestore subscription error:', err)
+        setIsLoading(false) // Stop loading on error so app doesn't hang
+      },
+    )
+    return unsub
+  }, [syncToFirestore])
+
+  useEffect(() => {
+    if (!isLoading && !isRemoteUpdate.current) {
+      syncToFirestore(character)
     }
   }, [character, isLoading, syncToFirestore])
 
