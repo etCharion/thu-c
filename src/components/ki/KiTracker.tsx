@@ -1,6 +1,7 @@
 import { useCharacter } from '../../context/CharacterContext'
 import { SectionCard } from '../layout/SectionCard'
 import { Counter } from '../controls/Counter'
+import { spellSaveDC, spellAttackBonus } from '../../lib/dnd5e'
 
 export function KiTracker() {
   const { character, dispatch } = useCharacter()
@@ -40,15 +41,12 @@ export function KiTracker() {
         <div className="text-center text-xs text-txt-muted border-t border-sheet-border pt-2">
           Focus Save DC{' '}
           <span className="text-txt-primary font-bold">
-            {8 +
-              Math.floor((character.abilityScores.wis - 10) / 2) +
-              character.proficiencyBonus}
+            {spellSaveDC(character.abilityScores.wis, character.proficiencyBonus)}
           </span>
           <span className="mx-2 text-sheet-border">·</span>
           Focus Attack{' '}
           <span className="text-txt-primary font-bold">
-            +
-            {Math.floor((character.abilityScores.dex - 10) / 2) + character.proficiencyBonus}
+            +{spellAttackBonus(character.abilityScores.wis, character.proficiencyBonus)}
           </span>
         </div>
       </div>

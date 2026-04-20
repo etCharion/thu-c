@@ -31,15 +31,13 @@ export async function updateCharacterField(
 }
 
 export function subscribeToCharacter(
-  onData: (character: Character) => void,
+  onData: (character: Character | null) => void,
   onError?: (err: Error) => void,
 ): Unsubscribe {
   return onSnapshot(
     charRef(),
     (snap) => {
-      if (snap.exists()) {
-        onData(snap.data() as Character)
-      }
+      onData(snap.exists() ? (snap.data() as Character) : null)
     },
     (err) => {
       console.error('Firestore subscription error:', err)

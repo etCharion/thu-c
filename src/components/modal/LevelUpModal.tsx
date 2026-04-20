@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useCharacter } from '../../context/CharacterContext'
 import { useLevelUpDraft } from '../../hooks/useLevelUpDraft'
-import { updateCharacterField } from '../../lib/firestore'
 import { LevelUpOverviewTab } from './LevelUpOverviewTab'
 import { LevelUpFeaturesTab } from './LevelUpFeaturesTab'
 import { LevelUpAttacksTab } from './LevelUpAttacksTab'
@@ -52,21 +51,6 @@ export function LevelUpModal({ isOpen, onClose }: Props) {
   const handleSave = () => {
     const payload = buildPayload()
     dispatch({ type: 'LEVEL_UP', payload })
-    // Write directly to Firestore to bypass the debounced sync's
-    // isRemoteUpdate race condition (snapshot + LEVEL_UP batched together).
-    // hitPoints intentionally excluded — current HP may have changed while
-    // the modal was open; the debounced sync handles it separately.
-    updateCharacterField({
-      attacks: payload.attacks,
-      classFeatures: payload.classFeatures,
-      classes: payload.classes,
-      abilityScores: payload.abilityScores,
-      armorClass: payload.armorClass,
-      speed: payload.speed,
-      proficienciesWeapons: payload.proficienciesWeapons,
-      proficienciesTools: payload.proficienciesTools,
-      languages: payload.languages,
-    }).catch(console.error)
     onClose()
   }
 
