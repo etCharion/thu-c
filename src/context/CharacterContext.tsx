@@ -209,6 +209,8 @@ interface CharacterContextValue {
   character: Character
   dispatch: React.Dispatch<CharacterAction>
   isLoading: boolean
+  syncStatus: 'synced' | 'saving' | 'error'
+  isOnline: boolean
 }
 
 const CharacterContext = createContext<CharacterContextValue | null>(null)
@@ -216,28 +218,55 @@ const CharacterContext = createContext<CharacterContextValue | null>(null)
 export function CharacterProvider({ children }: { children: React.ReactNode }) {
   const [character, dispatch] = useReducer(reducer, CHARACTER_SEED)
   const [isLoading, setIsLoading] = React.useState(true)
+  const [syncStatus, setSyncStatus] = React.useState<'synced' | 'saving' | 'error'>('synced')
+  const [isOnline, setIsOnline] = React.useState(true)
   const pendingRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isRemoteUpdate = useRef(false)
 
   // Debounced Firestore sync on state changes
   const syncToFirestore = useCallback((state: Character) => {
     if (pendingRef.current) clearTimeout(pendingRef.current)
+    setSyncStatus('saving')
     pendingRef.current = setTimeout(() => {
       // Use saveCharacter to ensure ALL fields are persisted,
       // including new ones added to the type definition.
-      saveCharacter(state).catch(console.error)
-    }, 300)
+      saveCharacter(state)
+        .then(() => setSyncStatus('synced'))
+        .catch((err) => {
+          console.error('Failed to sync to Firestore:', err)
+          setSyncStatus('error')
+        })
+    }, 1000) // Increased debounce to 1s to be safer
   }, [])
 
   // Subscribe to Firestore
+  // Monitor online status
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true)
+    const handleOffline = () => setIsOnline(false)
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [])
+
   useEffect(() => {
     const unsub = subscribeToCharacter(
       (data) => {
         if (!data) {
+          console.log('No character data found, seeding from CHARACTER_SEED...')
           // No document yet — seed it
           saveCharacter(CHARACTER_SEED)
-            .then(() => setIsLoading(false))
-            .catch(console.error)
+            .then(() => {
+              console.log('Seed successful')
+              setIsLoading(false)
+            })
+            .catch((err) => {
+              console.error('Seed failed:', err)
+              setIsLoading(false)
+            })
           return
         }
 
@@ -278,7 +307,7 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
   }, [character, isLoading, syncToFirestore])
 
   return (
-    <CharacterContext.Provider value={{ character, dispatch, isLoading }}>
+    <CharacterContext.Provider value={{ character, dispatch, isLoading, syncStatus, isOnline }}>
       {children}
     </CharacterContext.Provider>
   )
