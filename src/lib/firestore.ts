@@ -53,15 +53,15 @@ export async function updateCharacterField(
 }
 
 export function subscribeToCharacter(
-  onData: (character: Character | null) => void,
+  onData: (character: Character | null, hasPendingWrites: boolean) => void,
   onError?: (err: Error) => void,
 ): Unsubscribe {
   console.log('Starting Firestore subscription for character...');
   return onSnapshot(
     charRef(),
     (snap) => {
-      console.log('Firestore snapshot received. Exists:', snap.exists());
-      onData(snap.exists() ? (snap.data() as Character) : null)
+      console.log('Firestore snapshot received. Exists:', snap.exists(), 'HasPendingWrites:', snap.metadata.hasPendingWrites);
+      onData(snap.exists() ? (snap.data() as Character) : null, snap.metadata.hasPendingWrites)
     },
     (err) => {
       console.error('Firestore subscription error:', err)
